@@ -1,0 +1,158 @@
+---
+title: "BellBeat_Analysis"
+author: "Vinay Tekkur"
+date: "01/08/2021"
+output: html_document
+---
+
+Following Questions to get insights from data
+  1) Is Tracked Distance from user and sensor(tracker/device) is relative?
+  2) How Daily activities effect the number of calories?
+  3) How Daily activities effect to user weight?
+  4) How Daily activities effect to user BMI?
+  
+  
+#  Installing and Loading packages
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+# Load the DailyActivities Dataset
+```{r}
+dailyActivity_merged <- read_csv("dataset/dailyActivity_merged.csv")
+```
+
+## View the dataset
+```{r}
+View(dailyActivity_merged)
+head(dailyActivity_merged)
+```
+
+## Get column names of dataset
+```{r}
+colnames(dailyActivity_merged)
+```
+
+# Relationship between TotalDistance and Tracker Distance
+```{r}
+ggplot(data=dailyActivity_merged) + 
+  geom_point(mapping = aes(x = TotalDistance, y = TrackerDistance)) + 
+  labs(title = "Total Distance by User Vs. Tracker Total Distance", subtitle = "Here we tracking distance travlled by user and distance collected by traker",
+       x = "Total Distance", y = "Tracker Distance")
+```
+Conclusion: From Visualization it is clear that Distance from user and distance monitored by device or tracker are same except some noise
+
+
+# Relationships between Total distance Vs Calories
+```{r}
+ggplot(data=dailyActivity_merged) + 
+  geom_point(mapping = aes(x = TotalDistance, y = Calories)) + 
+  labs(title = "Total Distance by User Vs. Calories", subtitle = "Here collecting data from Total distance travelled by user Vs Calories lost",
+       x = "Total Distance")
+```
+Conclusion: If Activity increases Calories loss also increases
+
+
+# Load the weightLogInfo_merged Dataset
+```{r}
+weightLogInfo_merged <- read_csv("dataset/weightLogInfo_merged.csv")
+```
+
+## View the dataset
+```{r}
+View(weightLogInfo_merged)
+head(weightLogInfo_merged)
+```
+
+## Get column names of dataset
+```{r}
+colnames(weightLogInfo_merged)
+```
+
+# Get observations from both dataset
+```{r}
+nrow(dailyActivity_merged)
+nrow(weightLogInfo_merged)
+```
+
+# Get Summary of DailyActivities dataset
+Summary is calculated on Total Steps and Total Distance of user
+```{r}
+dailyActivity_merged %>%
+  select(TotalSteps, TotalDistance) %>%
+  summary()
+```
+
+# Get Summary of weightLogInfo_merged dataset
+Summary is calculated on Total Steps and Total Distance of user
+```{r}
+weightLogInfo_merged %>%
+  select(WeightKg, WeightPounds, BMI) %>%
+  summary()
+```
+
+
+# Merging DailyActivities datset and weightLogInfo dataset
+merging datasets based on "Id" which is common on both of the dataset
+```{r}
+combined_data <- merge(weightLogInfo_merged, dailyActivity_merged, by="Id")
+```
+
+## View the combined dataset
+```{r}
+View(combined_data)
+head(combined_data)
+```
+
+
+# Relationships between Total distance Vs Weight of user in Kg
+```{r}
+ggplot(data=dailyActivity_merged) + 
+  geom_point(mapping = aes(x = TotalDistance, y = Calories)) + 
+  labs(title = "Total Distance by User Vs. Calories", subtitle = "Here collecting data from Total distance travelled by user Vs Calories lost",
+       x = "Total Distance")
+```
+Conclusion: If Activity increases Weight of the user decreases
+
+
+# Relationships between Total distance Vs Weight of user in pounds
+```{r}
+ggplot(data=combined_data) + 
+  geom_smooth(mapping = aes(x = TotalDistance, y = WeightPounds)) + 
+  labs(title = "Total Distance by User Vs. Weight in pounds", subtitle = "Here collecting data from Total distance travelled by user Vs Weight of user in pounds",
+       x = "Total Distance",
+       y = "Weight in pounds")
+```
+Conclusion: If Activity increases Weight of the user decreases
+
+
+# Relationships between Total distance Vs BMI
+```{r}
+ggplot(data=combined_data) + 
+  geom_smooth(mapping = aes(x = TotalDistance, y = BMI)) + 
+  labs(title = "Total Distance by User Vs. BMI", subtitle = "Here collecting data from Total distance travelled by user Vs BMI",
+       x = "Total Distance",
+       y = "BMI")
+```
+
+Conclusion:
+Q) Is Tracked Distance from user and sensor(tracker/device) is relative?
+A) Based on analysis it id found that Distence tracked by device is valid 
+
+
+Q) How Daily activities effect the number of calories?
+A) If Activity increases Calories loss also increases
+
+
+Q) How Daily activities effect to user weight?
+A) If Activity increases Weight of the user decreases
+
+
+Q) How Daily activities effect to user BMI?
+A) If Activity increases BMI of the user decreases
+
+
+
+
